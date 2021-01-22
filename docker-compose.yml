@@ -1,0 +1,26 @@
+version: "3.7"
+services:
+  # db
+  postgres:
+    image: postgres:9.5-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_HOST_AUTH_METHOD=trust
+    volumes:
+      - db-data:/var/lib/postgresql/data
+
+  backend: &base
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: bundle exec rails s -p 8080 -b '0.0.0.0'
+    ports:
+      - "5000:8080"
+    volumes:
+      - ./:/usr/src/app
+    depends_on:
+      - postgres
+
+volumes:
+  db-data:
